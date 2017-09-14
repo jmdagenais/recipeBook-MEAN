@@ -12,6 +12,23 @@ import 'rxjs/add/operator/withLatestFrom';
 export class RecipeEffects {
 
   @Effect()
+  addRecipe = this.actions$
+    .ofType(RecipeActions.ADD_RECIPE)
+    .switchMap((action: RecipeActions.AddRecipe) => {
+      return this.httpClient.post<Recipe>('/api/recipes', action.payload);
+    })
+    .map((recipe: Recipe) => {
+      if(!recipe['ingredients']){
+        recipe.ingredients = [];
+      }
+
+      return {
+        type: RecipeActions.ADD_RECIPE_SUCCESS,
+        payload: recipe
+      };
+    });
+
+  @Effect()
   recipeFetch = this.actions$
     .ofType(RecipeActions.FETCH_RECIPES)
     .switchMap((action: RecipeActions.FetchRecipes) => {

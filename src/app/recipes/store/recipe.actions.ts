@@ -3,6 +3,7 @@ import {Recipe} from '../recipe.model';
 
 export const SET_RECIPES: string = 'SET_RECIPES';
 export const ADD_RECIPE: string = 'ADD_RECIPE';
+export const ADD_RECIPE_SUCCESS: string = 'ADD_RECIPE_SUCCESS';
 export const UPDATE_RECIPE: string = 'UPDATE_RECIPE';
 export const DELETE_RECIPE: string = 'DELETE_RECIPE';
 export const STORE_RECIPES: string = 'STORE_RECIPES';
@@ -16,6 +17,12 @@ export class SetRecipes implements Action {
 
 export class AddRecipe implements Action {
   readonly type: string = ADD_RECIPE;
+
+  constructor(public payload: Recipe) {}
+}
+
+export class AddRecipeSuccess implements Action {
+  readonly type: string = ADD_RECIPE_SUCCESS;
 
   constructor(public payload: Recipe) {}
 }
@@ -40,4 +47,4 @@ export class FetchRecipes implements Action {
  readonly type = FETCH_RECIPES;
 }
 
-export type RecipesActions = SetRecipes | AddRecipe | UpdateRecipe | DeleteRecipe | StoreRecipes | FetchRecipes
+export type RecipesActions = SetRecipes | AddRecipe | UpdateRecipe | DeleteRecipe | StoreRecipes | FetchRecipes | AddRecipeSuccess

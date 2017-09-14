@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onFetchData() {
-    this.store.dispatch(new RecipeActions.FetchRecipes());
+    //this.store.dispatch(new RecipeActions.FetchRecipes());
     this.router.navigate(['/recipes']);  //todo: mettre dans effects
   }
 
