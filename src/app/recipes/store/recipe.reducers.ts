@@ -2,7 +2,7 @@ import {Recipe} from '../recipe.model';
 import {Ingredient} from '../../shared/ingredient.model';
 
 import * as RecipeActions from './recipe.actions';
-import {AddRecipe, DeleteRecipe, SetRecipes, UpdateRecipe} from './recipe.actions';
+import {AddRecipe, DeleteRecipe, SetRecipes, UpdateRecipeSuccess} from './recipe.actions';
 import * as fromApp from '../../store/app.reducers';
 
 export interface FeatureState extends fromApp.AppState {
@@ -14,23 +14,7 @@ export interface State {
 }
 
 const initialState: State = {
-  recipes: [
-    new Recipe('Steak frites',
-      'A delicious steak with french fries',
-      'https://www.bistrolentracte.com/medias/img/articles/steak-frites.jpg',
-      [
-        new Ingredient('steak', 1),
-        new Ingredient('fries', 20)
-      ]),
-    new Recipe('Chocolate pie',
-      'Yummy!',
-      'http://tastykitchen.com/wp-content/uploads/2012/05/Tasty-Kitchen-Blog-Easy-Chocolate-Pie-10.jpg',
-      [
-        new Ingredient('pie crust', 1),
-        new Ingredient('chocolate mousse', 1)
-      ]
-    )
-  ]
+  recipes: []
 };
 
 export function recipeReducer(state = initialState, action: RecipeActions.RecipesActions) {
@@ -40,22 +24,31 @@ export function recipeReducer(state = initialState, action: RecipeActions.Recipe
         ...state,
         recipes: [...(<SetRecipes>action).payload]
       };
-    case RecipeActions.ADD_RECIPE:
+    case RecipeActions.ADD_RECIPE_SUCCESS:
       return {
         ...state,
         recipes: [...state.recipes, (<AddRecipe>action).payload]
       };
-    case RecipeActions.UPDATE_RECIPE:
-      const recipe: Recipe = state.recipes[(<UpdateRecipe>action).payload.index];
-      const updatedRecipe: Recipe = {...recipe, ...(<UpdateRecipe>action).payload.updatedRecipe};
+    case RecipeActions.UPDATE_RECIPE_SUCCESS:
+      const oldRecipe: Recipe = state.recipes.find((recipe: Recipe) => {
+        return recipe._id === (<UpdateRecipeSuccess>action).payload._id;
+      });
+
+      const updatedRecipe: Recipe = {...oldRecipe, ...(<UpdateRecipeSuccess>action).payload};
       const updatedRecipes: Recipe[] = [...state.recipes];
-      updatedRecipes[(<UpdateRecipe>action).payload.index] = updatedRecipe;
+      updatedRecipes.forEach((recipe: Recipe, index: number) => {
+        if (recipe._id === updatedRecipe._id) {
+          updatedRecipes[index] = updatedRecipe;
+          return;
+        }
+      });
       return {
         ...state,
         recipes: updatedRecipes
       };
     case RecipeActions.DELETE_RECIPE:
       const recipes: Recipe[] = [...state.recipes];
+      // TODO: Manage without the index
       recipes.splice((<DeleteRecipe>action).payload, 1);
       return {
         ...state,

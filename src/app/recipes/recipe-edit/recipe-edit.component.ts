@@ -13,7 +13,7 @@ import * as fromRecipe from '../store/recipe.reducers';
   styleUrls: ['./recipe-edit.component.css']
 })
 export class RecipeEditComponent implements OnInit {
-  id: number;
+  id: string;
   editMode: boolean = false;
   recipeForm: FormGroup;
 
@@ -25,7 +25,7 @@ export class RecipeEditComponent implements OnInit {
   ngOnInit() {
     this.route.params
       .subscribe((params: Params) => {
-        this.id = +params['id'];
+        this.id = params['id'];
         this.editMode = params['id'] != null;
         this.initForm();
       });
@@ -45,7 +45,7 @@ export class RecipeEditComponent implements OnInit {
 
   onSubmit() {
     if (this.editMode) {
-      this.store.dispatch(new RecipeActions.UpdateRecipe({index: this.id, updatedRecipe: this.recipeForm.value}));
+      this.store.dispatch(new RecipeActions.UpdateRecipe(this.recipeForm.value));
     } else {
       this.store.dispatch(new RecipeActions.AddRecipe(this.recipeForm.value));
     }
@@ -70,7 +70,7 @@ export class RecipeEditComponent implements OnInit {
       this.store.select('recipes')
         .take(1)
         .subscribe((recipeState: fromRecipe.State) => {
-          const recipe: Recipe = recipeState.recipes[this.id];
+          const recipe: Recipe = recipeState.recipes.find(r => r._id === this.id);
           recipeName = recipe.name;
           recipeImagePath = recipe.imagePath;
           recipeDesc = recipe.description;
@@ -90,6 +90,7 @@ export class RecipeEditComponent implements OnInit {
         });
     }
     this.recipeForm = new FormGroup({
+      '_id': new FormControl(this.id),
       'name': new FormControl(recipeName, Validators.required),
       'imagePath': new FormControl(recipeImagePath, Validators.required),
       'description': new FormControl(recipeDesc, Validators.required),

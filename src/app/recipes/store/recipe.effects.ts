@@ -47,13 +47,30 @@ export class RecipeEffects {
       };
     });
 
-  @Effect({dispatch: false})
-  recipeStore = this.actions$
-    .ofType(RecipeActions.STORE_RECIPES)
-    .withLatestFrom(this.store.select('recipes'))
-    .switchMap(([action, state]) => {
-      return this.httpClient.put('https://jmd-udemy-recipe-book.firebaseio.com/recipes.json', state.recipes);
+  @Effect()
+  updateRecipe = this.actions$
+    .ofType(RecipeActions.UPDATE_RECIPE)
+    .switchMap((action: RecipeActions.UpdateRecipe) => {
+      return this.httpClient.put(`/api/recipes/${action.payload._id}`, action.payload);
+    })
+    .map((recipe: Recipe) => {
+      if(!recipe['ingredients']){
+        recipe.ingredients = [];
+      }
+
+      return {
+        type: RecipeActions.UPDATE_RECIPE_SUCCESS,
+        payload: recipe
+      };
     });
+
+  // @Effect({dispatch: false})
+  // recipeStore = this.actions$
+  //   .ofType(RecipeActions.STORE_RECIPES)
+  //   .withLatestFrom(this.store.select('recipes'))
+  //   .switchMap(([action, state]) => {
+  //     return this.httpClient.put('https://jmd-udemy-recipe-book.firebaseio.com/recipes.json', state.recipes);
+  //   });
 
   constructor(private actions$: Actions,
               private httpClient: HttpClient,

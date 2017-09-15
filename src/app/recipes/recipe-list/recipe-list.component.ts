@@ -22,7 +22,6 @@ export class RecipeListComponent implements OnInit {
 
   ngOnInit() {
     this.recipeState = this.store.select('recipes');
-    this.store.dispatch(new RecipeActions.FetchRecipes());
   }
 
   onNewRecipe() {
