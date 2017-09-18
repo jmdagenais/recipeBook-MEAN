@@ -24,15 +24,6 @@ export class HeaderComponent implements OnInit {
     this.authState = this.store.select('auth');
   }
 
-  onSave() {
-    this.store.dispatch(new RecipeActions.StoreRecipes());
-  }
-
-  onFetchData() {
-    //this.store.dispatch(new RecipeActions.FetchRecipes());
-    this.router.navigate(['/recipes']);  //todo: mettre dans effects
-  }
-
   onLogout() {
     this.store.dispatch(new AuthActions.Logout());
   }

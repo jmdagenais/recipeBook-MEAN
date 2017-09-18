@@ -21,37 +21,44 @@ router.route('/recipes')
     })
   });
 
+router.use('/recipes/:id', function(req, res, next) {
+  Recipe.findById(req.params.id, function(err, recipe){
+    if(err){
+      res.status(500).send(err);
+    } else if (recipe) {
+      req.recipe = recipe;
+      next();
+    } else {
+      res.status(404).send('No recipe found');
+    }
+  })
+});
+
 router.route('/recipes/:id')
   .get(function(req, res) {
-    Recipe.findById(req.params.id, function(err, result){
-      if(err) {
-        console.log('Error when fetching recipe: ', err);
-        res.sendStatus(500);
-      } else if(!result) {
-        res.sendStatus(400);
-      } else {
-        res.json(result);
-      }
-    });
+    res.json(req.recipe);
   })
   .put(function(req, res) {
-    Recipe.findById(req.params.id, function(err, recipe) {
-      if(err){
+      var body = req.body;
+      req.recipe.name = body.name;
+      req.recipe.description = body.description;
+      req.recipe.imagePath = body.imagePath;
+      req.recipe.ingredients = body.ingredients;
+
+      req.recipe.save(function(err, result) {
+        if(err){
+          res.status(500).send(err);
+        } else {
+          res.json(result);
+        }
+      });
+    })
+  .delete(function(req, res) {
+    req.recipe.remove(function (err) {
+      if (err) {
         res.status(500).send(err);
       } else {
-        var body = req.body;
-        recipe.name = body.name;
-        recipe.description = body.description;
-        recipe.imagePath = body.imagePath;
-        recipe.ingredients = body.ingredients;
-
-        recipe.save(function(err, result) {
-          if(err){
-            res.status(500).send(err);
-          } else {
-            res.json(result);
-          }
-        });
+        res.sendStatus(204);
       }
     });
   });

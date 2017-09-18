@@ -2,7 +2,7 @@ import {Recipe} from '../recipe.model';
 import {Ingredient} from '../../shared/ingredient.model';
 
 import * as RecipeActions from './recipe.actions';
-import {AddRecipe, DeleteRecipe, SetRecipes, UpdateRecipeSuccess} from './recipe.actions';
+import {AddRecipe, DeleteRecipe, DeleteRecipeSuccess, SetRecipes, UpdateRecipeSuccess} from './recipe.actions';
 import * as fromApp from '../../store/app.reducers';
 
 export interface FeatureState extends fromApp.AppState {
@@ -46,10 +46,13 @@ export function recipeReducer(state = initialState, action: RecipeActions.Recipe
         ...state,
         recipes: updatedRecipes
       };
-    case RecipeActions.DELETE_RECIPE:
-      const recipes: Recipe[] = [...state.recipes];
-      // TODO: Manage without the index
-      recipes.splice((<DeleteRecipe>action).payload, 1);
+    case RecipeActions.DELETE_RECIPE_SUCCESS:
+      let recipes: Recipe[] = [...state.recipes];
+
+      recipes = recipes.filter((recipe: Recipe) => {
+        return recipe._id !== (<DeleteRecipeSuccess>action).payload
+      });
+
       return {
         ...state,
         recipes: recipes

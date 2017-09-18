@@ -14,13 +14,6 @@
           <li><a routerLink="/signup">Register</a></li>
         </ng-template>
         <li *ngIf="(authState | async).authenticated"><a style="cursor: pointer" (click)="onLogout()">Logout</a></li>
-        <li class="dropdown" appDropdown *ngIf="(authState | async).authenticated">
-          <a style="cursor: pointer" class="dropdown-toggle" role="button">Manage<span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a style="cursor: pointer" (click)="onSave()">Save Data</a></li>
-            <li><a style="cursor: pointer" (click)="onFetchData()">Fetch Data</a></li>
-          </ul>
-        </li>
       </ul>
     </div>
   </div>

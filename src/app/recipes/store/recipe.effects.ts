@@ -15,6 +15,8 @@ export class RecipeEffects {
   addRecipe = this.actions$
     .ofType(RecipeActions.ADD_RECIPE)
     .switchMap((action: RecipeActions.AddRecipe) => {
+      // delete the _id property because if it's set to null when sendint to the API the API will send it back as null
+      delete(action.payload._id);
       return this.httpClient.post<Recipe>('/api/recipes', action.payload);
     })
     .map((recipe: Recipe) => {
@@ -64,13 +66,20 @@ export class RecipeEffects {
       };
     });
 
-  // @Effect({dispatch: false})
-  // recipeStore = this.actions$
-  //   .ofType(RecipeActions.STORE_RECIPES)
-  //   .withLatestFrom(this.store.select('recipes'))
-  //   .switchMap(([action, state]) => {
-  //     return this.httpClient.put('https://jmd-udemy-recipe-book.firebaseio.com/recipes.json', state.recipes);
-  //   });
+  deletedId = null;
+  @Effect()
+  deleteRecipe = this.actions$
+    .ofType(RecipeActions.DELETE_RECIPE)
+    .switchMap((action: RecipeActions.DeleteRecipe) => {
+      this.httpClient.delete(`/api/recipes/${action.payload}`);
+      return action.payload;
+    })
+    .map((id) => {
+      return {
+        type: RecipeActions.DELETE_RECIPE_SUCCESS,
+        payload: this.deletedId
+      };
+    });
 
   constructor(private actions$: Actions,
               private httpClient: HttpClient,

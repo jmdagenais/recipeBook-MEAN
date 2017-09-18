@@ -1,15 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, Router} from '@angular/router';
+import {HttpClient} from '@angular/common/http';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/take';
 
-import * as ShoppingListActions from '../../shopping-list/store/shopping-list.actions';
 import * as fromRecipe from '../store/recipe.reducers';
 import * as RecipeActions from '../store/recipe.actions';
-import {Recipe} from "../recipe.model";
-import {Ingredient} from "../../shared/ingredient.model";
-import {Subscription} from "rxjs/Subscription";
+import {Recipe} from '../recipe.model';
+import {Subscription} from 'rxjs/Subscription';
 
 
 @Component({
@@ -25,11 +24,13 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
 
   // subscriptions to clear
   recipeSubscription: Subscription;
+  httpSubscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private store: Store<fromRecipe.FeatureState>) { }
+    private store: Store<fromRecipe.FeatureState>,
+    private httpClient: HttpClient) { }
 
   ngOnInit() {
     this.route.params
@@ -59,11 +60,15 @@ export class RecipeDetailComponent implements OnInit, OnDestroy {
   }
 
   onDeleteRecipe() {
-    this.store.dispatch(new RecipeActions.DeleteRecipe(this.id));
-    this.router.navigate(['/recipes']);
+    this.httpSubscription = this.httpClient.delete(`api/recipes/${this.id}`)
+      .subscribe(() => {
+        this.store.dispatch(new RecipeActions.DeleteRecipeSuccess(this.id));
+        this.router.navigate(['/recipes']);
+      });
   }
 
   ngOnDestroy() {
     this.recipeSubscription.unsubscribe();
+    this.httpSubscription.unsubscribe();
   }
 }

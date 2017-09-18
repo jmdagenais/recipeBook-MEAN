@@ -4,7 +4,7 @@ export class Recipe {
   public description: string;
   public imagePath: string;
   public ingredients: Ingredient[];
-  readonly _id: string;
+  _id: string = '';
 
   constructor() {
     // this.name = name;
